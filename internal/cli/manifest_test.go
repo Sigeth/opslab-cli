@@ -58,3 +58,21 @@ func TestManifestRefusesInvalidPackages(t *testing.T) {
 		t.Fatalf("expected errInvalid, got %v", err)
 	}
 }
+
+func TestImagesListsBuiltImages(t *testing.T) {
+	dir := writePackage(t, validManifest, "setup.sh")
+	out, err := run(t, "challenge", "images", dir)
+	if err != nil || out != "box\tdocker.io/library/debian:13-slim\t-\n" {
+		t.Fatalf("%v: %q", err, out)
+	}
+	if err := os.MkdirAll(filepath.Join(dir, "images", "box"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "images", "box", "Dockerfile"), []byte("FROM scratch\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	out, _ = run(t, "challenge", "images", dir)
+	if want := "box\tdocker.io/library/debian:13-slim\t" + filepath.Join(dir, "images", "box") + "\n"; out != want {
+		t.Fatalf("got %q, want %q", out, want)
+	}
+}

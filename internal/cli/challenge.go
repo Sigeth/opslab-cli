@@ -15,7 +15,7 @@ func newChallengeCommand() *cobra.Command {
 		Use:   "challenge",
 		Short: "Write, test and publish challenges",
 	}
-	cmd.AddCommand(newChallengeLintCommand(), newChallengeManifestCommand())
+	cmd.AddCommand(newChallengeLintCommand(), newChallengeManifestCommand(), newChallengeImagesCommand())
 	return cmd
 }
 
